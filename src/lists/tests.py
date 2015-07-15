@@ -16,7 +16,7 @@ from .models import Item, List
 class HomePageTest(TestCase):
 
     def test_root_url_resolves_to_home_page_view(self):
-        found = resolve('/lists/')
+        found = resolve('/')
         self.assertEqual(found.func, home)
 
     def test_home_page_returns_correct_html(self):
