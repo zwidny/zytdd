@@ -9,27 +9,28 @@ REPO_URL = 'git@github.com:zwidny/zytdd.git'
 
 def deploy():
     site_folder = '/home/%s/sites/%s' % (env.user, env.host)
-    source_folder = os.path.join(site_folder, 'src')
+    _get_latest_source(site_folder)
     _create_directory_structure_if_necessary(site_folder)
-    _get_latest_source(source_folder)
+    _update_virtualenv(site_folder)
+    source_folder = os.path.join(site_folder, 'src')
     _update_settings(source_folder, env.host)
-    _update_virtualenv(source_folder)
+
     _update_static_files(source_folder)
     _update_database(source_folder)
 
 
-def _create_directory_structure_if_necessary(site_folder):
-    for subfolder in ('database', 'static'):
-        run('mkdir -p %s/%s' % (site_folder, subfolder))
-
-
 def _get_latest_source(source_folder):
-    if exists(os.path(source_folder, '.git')):
+    if exists(os.path.join(source_folder, '.git')):
         run("cd %s && git fetch" % (source_folder, ))
     else:
         run('git clone %s %s' % (REPO_URL, source_folder))
     current_commit = local('git log -n 1 --format=%H', capture=True)
     run('cd %s && git reset --hard %s' % (source_folder, current_commit))
+
+
+def _create_directory_structure_if_necessary(site_folder):
+    for subfolder in ('database', 'static', 'virtualenv'):
+        run('mkdir -p %s/%s' % (site_folder, subfolder))
 
 
 def _update_settings(source_folder, site_name):
@@ -47,7 +48,7 @@ def _update_settings(source_folder, site_name):
 
 
 def _update_virtualenv(source_folder):
-    virtualenv_folder = os.path.join(source_folder, '../virtualenv')
+    virtualenv_folder = os.path.join(source_folder, 'virtualenv')
     if not exists(os.path.join(virtualenv_folder, 'bin/pip')):
         run('virtualenv --python=python3 %s' % (virtualenv_folder, ))
     run('%s/bin/pip install -r %s/requirements.txt' % (
