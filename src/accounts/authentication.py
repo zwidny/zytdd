@@ -3,7 +3,7 @@ import requests
 from accounts.models import ListUser
 
 
-class PersonAuthenticationBackend(object):
+class PersonaAuthenticationBackend(object):
 
     def authenticate(self, assertion):
         # send the assertion to mozilla's verifier service.
