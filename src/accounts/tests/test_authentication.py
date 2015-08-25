@@ -18,7 +18,7 @@ class AuthenticateTest(TestCase):
         user.save()
 
     def test_sends_assertion_to_mozilla_with_domain(self, mock_post):
-        self.backend.authentication('an assertion')
+        self.backend.authenticate('an assertion')
         mock_post.assert_called_once_with(
             PERSONA_VERIFY_URL,
             data={'assertion': "an assertion", 'audience': DOMAIN}
